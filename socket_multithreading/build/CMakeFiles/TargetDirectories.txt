@@ -1,0 +1,3 @@
+/mnt/d/meomeo/test_code/socket_multithreading/build/CMakeFiles/rebuild_cache.dir
+/mnt/d/meomeo/test_code/socket_multithreading/build/CMakeFiles/socket_multithreading.dir
+/mnt/d/meomeo/test_code/socket_multithreading/build/CMakeFiles/edit_cache.dir
