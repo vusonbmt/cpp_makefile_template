@@ -1,0 +1,2 @@
+How to compile on Linux:
+g++ -std=c++11 hello.cpp -lpthread
