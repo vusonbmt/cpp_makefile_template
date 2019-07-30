@@ -13,19 +13,26 @@
 # **************************************************************
 #
 
-CXX      := -c++
-CXXFLAGS := -pedantic-errors -Wall -Wextra -Werror
-LDFLAGS  := -L/usr/lib -lstdc++ -lm
+CXX      := g++
+# CXXFLAGS := -pedantic-errors -Wall -Wextra -Werror
+CXXFLAGS := -O2 -std=c++11 -Wall -Wextra -Wcast-align -Wconversion -Werror -Wmaybe-uninitialized -m64 $(INCLUDE)
+LDFLAGS  := -L/usr/lib -lstdc++ -lm -lpthread -lquadmath
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/apps
-TARGET   := program
-INCLUDE  := -Iinclude/
+TARGET   := main
+INCLUDE  := -I ./include/module1/ \
+            -I ./include/module2/ \
+            -I ./include/ \
+
+SRC1  	= ./src/module1
+SRC2  	= ./src/module2
+SRCMAIN = ./src
+
 SRC      :=                      \
-   $(wildcard src/module1/*.cpp) \
-   $(wildcard src/module2/*.cpp) \
-   $(wildcard src/module3/*.cpp) \
-   $(wildcard src/*.cpp)         \
+   $(wildcard $(SRC1)/*.cpp) \
+   $(wildcard $(SRC2)/*.cpp) \
+   $(wildcard $(SRCMAIN)/*.cpp)         \
 
 OBJECTS := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 
