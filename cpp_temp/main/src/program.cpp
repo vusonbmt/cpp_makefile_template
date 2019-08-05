@@ -2,6 +2,8 @@
 #include "mod1c2.hpp"
 #include "mod2c1.hpp"
 #include "mod2c2.hpp"
+#include "mod3c1.h"
+#include "mod3c2.h"
 #include "program.hpp"
 
 int main()
@@ -15,6 +17,8 @@ int main()
    m1c2.foo();
    m2c1.foo();
    m2c2.foo();
+   csub_init();
+   csub_init_process();
 
    program::foo();
 

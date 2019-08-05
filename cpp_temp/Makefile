@@ -1,63 +1,91 @@
-#
-# **************************************************************
-# *                Simple C++ Makefile Template                *
-# *                                                            *
-# * Author: Arash Partow (2003)                                *
-# * URL: http://www.partow.net/programming/makefile/index.html *
-# *                                                            *
-# * Copyright notice:                                          *
-# * Free use of this C++ Makefile template is permitted under  *
-# * the guidelines and in accordance with the the MIT License  *
-# * http://www.opensource.org/licenses/MIT                     *
-# *                                                            *
-# **************************************************************
-#
 
+CC       := gcc
 CXX      := g++
-# CXXFLAGS := -pedantic-errors -Wall -Wextra -Werror
-CXXFLAGS := -O2 -std=c++11 -Wall -Wextra -Wcast-align -Wconversion -Werror -Wmaybe-uninitialized -m64 $(INCLUDE)
-LDFLAGS  := -L/usr/lib -lstdc++ -lm -lpthread -lquadmath
-BUILD    := ./build
-OBJ_DIR  := $(BUILD)/objects
-APP_DIR  := $(BUILD)/apps
-TARGET   := main
-INCLUDE  := -I ./include/module1/ \
-            -I ./include/module2/ \
-            -I ./include/ \
 
-SRC1  	= ./src/module1
-SRC2  	= ./src/module2
-SRCMAIN = ./src
+OBJDIR              := obj
+OSCODE              := $(shell lsb_release -sc)
+BINDIR              := bin-$(OSCODE)
 
-SRC      :=                      \
-   $(wildcard $(SRC1)/*.cpp) \
-   $(wildcard $(SRC2)/*.cpp) \
-   $(wildcard $(SRCMAIN)/*.cpp)         \
+INCDIR              :=
+INCDIR              += main/inc
+INCDIR              += module1/inc
+INCDIR              += module2/inc
+INCDIR              += module3/inc
 
-OBJECTS := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
+SRCDIR              := main/src
+SRC1DIR             := module1/src
+SRC2DIR             := module2/src
+SRC3DIR             := module3/src
 
-all: build $(APP_DIR)/$(TARGET)
+SRC_SRCS            := $(wildcard $(SRCDIR)/*.cpp)
+SRC1_SRCS           := $(wildcard $(SRC1DIR)/*.cpp)
+SRC2_SRCS           := $(wildcard $(SRC2DIR)/*.cpp)
+SRC3_SRCS           := $(wildcard $(SRC3DIR)/*.c)
 
-$(OBJ_DIR)/%.o: %.cpp
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(INCLUDE) -o $@ -c $<
+SRC_OBJS            := $(SRC_SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
+SRC1_OBJS           := $(SRC1_SRCS:$(SRC1DIR)/%.cpp=$(OBJDIR)/%.o)
+SRC2_OBJS           := $(SRC2_SRCS:$(SRC2DIR)/%.cpp=$(OBJDIR)/%.o)
+SRC3_OBJS           := $(SRC3_SRCS:$(SRC3DIR)/%.c=$(OBJDIR)/%.o)
 
-$(APP_DIR)/$(TARGET): $(OBJECTS)
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(INCLUDE) $(LDFLAGS) -o $(APP_DIR)/$(TARGET) $(OBJECTS)
+MAIN_APP            := $(BINDIR)/Main
+MAIN_SRCS           := $(SRCDIR)/program.cpp
+MAIN_SRCS           += $(SRC1DIR)/mod1c1.cpp
+MAIN_SRCS           += $(SRC1DIR)/mod1c2.cpp
+MAIN_SRCS           += $(SRC2DIR)/mod2c1.cpp
+MAIN_SRCS           += $(SRC2DIR)/mod2c2.cpp
+MAIN_SRCS           += $(SRC3DIR)/mod3c1.c
+MAIN_SRCS           += $(SRC3DIR)/mod3c2.c
 
-.PHONY: all build clean debug release
+MAIN_OBJS           := $(MAIN_SRCS)
+MAIN_OBJS           := $(patsubst $(SRC1DIR)/%,$(OBJDIR)/%,$(MAIN_OBJS:.cpp=.o))
+MAIN_OBJS           := $(patsubst $(SRC2DIR)/%,$(OBJDIR)/%,$(MAIN_OBJS:.cpp=.o))
+MAIN_OBJS           := $(patsubst $(SRC3DIR)/%,$(OBJDIR)/%,$(MAIN_OBJS:.c=.o))
 
-build:
-	@mkdir -p $(APP_DIR)
-	@mkdir -p $(OBJ_DIR)
+MAIN_OBJS           := $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(MAIN_OBJS:.cpp=.o))
 
-debug: CXXFLAGS += -DDEBUG -g
-debug: all
+CFLAGS              :=
+CFLAGS              += $(INCDIR:%=-I%)
+CFLAGS              += -g
+CFLAGS              += -Wall
+CFLAGS              += -O2
+CFLAGS              += -Wextra
+CFLAGS              += -Wcast-align
+CFLAGS              += -Wconversion
+CFLAGS              += -Werror
+CFLAGS              += -Wmaybe-uninitialized
+CFLAGS              += -m64
 
-release: CXXFLAGS += -O2
-release: all
+CXXFLAGS			:= $(CFLAGS)
+CXXFLAGS            += -std=c++11
+
+LDFLAGS 			:=
+LDFLAGS				+= -lstdc++
+LDFLAGS				+= -lm
+LDFLAGS				+= -lpthread
+LDFLAGS             += -lquadmath
+
+.PHONY: directories
+
+all: directories $(MAIN_APP)
+
+$(MAIN_APP): $(MAIN_OBJS)
+	$(CXX) $^ $(LDFLAGS) -o $@
+
+$(SRC_OBJS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(SRC1_OBJS): $(OBJDIR)/%.o : $(SRC1DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(SRC2_OBJS): $(OBJDIR)/%.o : $(SRC2DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(SRC3_OBJS): $(OBJDIR)/%.o : $(SRC3DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+directories:
+	mkdir -p $(BINDIR) $(OBJDIR)
 
 clean:
-	-@rm -rvf $(OBJ_DIR)/*
-	-@rm -rvf $(APP_DIR)/*
+	rm -fr $(MAIN_APP) $(OBJDIR)
+
