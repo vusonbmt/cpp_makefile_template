@@ -45,15 +45,17 @@ MAIN_OBJS           := $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(MAIN_OBJS:.cpp=.o))
 
 CFLAGS              :=
 CFLAGS              += $(INCDIR:%=-I%)
-CFLAGS              += -g
-CFLAGS              += -Wall
-CFLAGS              += -O2
 CFLAGS              += -Wextra
 CFLAGS              += -Wcast-align
 CFLAGS              += -Wconversion
 CFLAGS              += -Werror
 CFLAGS              += -Wmaybe-uninitialized
 CFLAGS              += -m64
+CFLAGS              += -fprofile-arcs
+CFLAGS              += -ftest-coverage
+CFLAGS              += -g
+CFLAGS              += -O0
+CFLAGS              += -Wall
 
 CXXFLAGS			:= $(CFLAGS)
 CXXFLAGS            += -std=c++11
@@ -63,6 +65,7 @@ LDFLAGS				+= -lstdc++
 LDFLAGS				+= -lm
 LDFLAGS				+= -lpthread
 LDFLAGS             += -lquadmath
+LDFLAGS             += -lgcov --coverage
 
 .PHONY: directories
 

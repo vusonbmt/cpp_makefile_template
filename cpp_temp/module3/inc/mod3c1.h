@@ -8,7 +8,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-void csub_init( void);
+void init( void);
 
 #ifdef __cplusplus
 }

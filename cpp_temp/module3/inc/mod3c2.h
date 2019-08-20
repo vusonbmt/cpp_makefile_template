@@ -8,7 +8,7 @@ extern "C"
 {
 #endif /* __cplusplus */
 
-   void csub_init_process(void);
+   void init_process(void);
 
 #ifdef __cplusplus
 }

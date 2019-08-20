@@ -17,8 +17,8 @@ int main()
    m1c2.foo();
    m2c1.foo();
    m2c2.foo();
-   csub_init();
-   csub_init_process();
+   init();
+   init_process();
 
    program::foo();
 
